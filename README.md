@@ -15,7 +15,7 @@ pip install uv
 ```bash
 uv sync
 ```
-This will download all the dependencies.
+This will download all the dependencies.<br>
 6. To run the file:
 ```bash
 uv run main.py
