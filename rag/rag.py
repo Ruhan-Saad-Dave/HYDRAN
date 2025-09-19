@@ -75,7 +75,7 @@ def main():
     """Main function to run the RAG agent."""
     
     # 1. Set up the LLM (requires an API key for Google's service)
-    llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0.2)
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.2)
 
     # 2. Set up the local knowledge base retriever
     retriever = load_and_index_documents()
@@ -95,12 +95,11 @@ def main():
         # Tool for Google web search
         search = GoogleSearchAPIWrapper()
         web_search_tool = Tool(
-            name="google_search",
+            name = "google_search",
             description="Use this tool to search the internet for up-to-date information. "
                         "It is a fallback to be used only if the local_knowledge_base does not contain a relevant answer.",
             func=search.run
         )
-        tools.append(web_search_tool)
         tools.append(web_search_tool)
 
     if not tools:
