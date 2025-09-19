@@ -14,7 +14,10 @@ dependencies = [
     "langchain-google-community>=2.0.10",
     "langchain-google-genai>=2.1.12",
     "langchain-huggingface>=0.3.1",
+    "pydantic>=2.11.9",
+    "pytest>=8.4.2",
     "python-dotenv>=1.1.1",
     "sentence-transformers>=5.1.0",
     "supabase>=2.18.1",
+    "uvicorn>=0.35.0",
 ]
