@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware 
 
 from features.symptom_checker.router import symptom_router
+from features.stock.router import stock_router
 
 app = FastAPI(
     title = "HYDRAN Telemedicine API",
@@ -20,6 +21,7 @@ app.add_middleware(
 )
 
 app.include_router(symptom_router, prefix = "/symptom_checker")
+app.include_router(stock_router, prefix = "/stock_checker")
 
 if __name__ == "__main__":
     import uvicorn 

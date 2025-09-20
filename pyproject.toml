@@ -18,7 +18,9 @@ dependencies = [
     "pydantic>=2.11.9",
     "pytest>=8.4.2",
     "python-dotenv>=1.1.1",
+    "python-multipart>=0.0.20",
     "sentence-transformers>=5.1.0",
     "supabase>=2.18.1",
+    "twilio>=9.8.1",
     "uvicorn>=0.35.0",
 ]

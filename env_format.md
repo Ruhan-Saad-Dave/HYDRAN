@@ -5,6 +5,9 @@ GOOGLE_API_KEY="<google_api_key>"
 SUPABASE_URL="<supabase_url>"
 SUPABASE_KEY="<supabase_key>"
 GOOGLE_CSE_ID="<google_cse_key>"
+TWILIO_ACCOUNT_SID="<twilio_account_sid>"
+TWILIO_AUTH_TOKEN="<twilio_auth_token>"
+TWILIO_PHONE_NUMBER= 1234567890
 ```
 Replace the "content" with actual api_keys and urls, also make sure the .env file is mentioned in ".gitignore" file
 - google_api_key is found over [here](https://aistudio.google.com/app/apikey)
@@ -16,3 +19,4 @@ Replace the "content" with actual api_keys and urls, also make sure the .env fil
     - go to API keys
     - use the key at "service role" section
     - Note: You might need special permission to get the API key if you are not the project owner.
+- for twilio stuff, visit [here](https://www.twilio.com/docs/iam/api/authtoken)
