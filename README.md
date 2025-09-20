@@ -35,3 +35,20 @@ Feat: Implemented endpoint for AI chatbot
 4. If an error is found, put it on issue (putting and solving issue boosts your github profile)
 5. If there is a file or folder that is not supposed to go on github (like API keys), put the file name in .gitignore file. 
 6. If you have included a .env file, make sure to mention the variable names (not value) in the documentation.
+
+## Trouble shooting
+1. In case of "No module named <library_name>" error, 
+```bash
+uv sync
+```
+or 
+```bash
+uv add <library_name>
+```
+should resolve the error. (Assuming you followed the setup steps)
+
+2. In case of "some_api_key variable not set", create a ".env" file, and write contents mentioned in [env_format.md](env_format.md)
+
+## Other
+1. [Features to implement](features.md)
+2. [Contributors](contributors.md)
