@@ -1,0 +1,126 @@
+To: Backend Development Team
+From: Project Lead
+Date: September 22, 2025
+Subject: Critical - Resolving "Out of Memory" Crashes on Render
+1. Executive Summary
+Problem: The chatbot backend service, deployed on a Render instance with 512MB RAM, is crashing frequently due to "Out of Memory" errors under minimal load.
+
+Root Cause Analysis: The evidence strongly suggests that a large Machine Learning model (e.g., for language processing) is being loaded into memory on every single API request. This is a highly inefficient pattern that cannot scale. When a few users send messages concurrently, the server attempts to load the large model multiple times, immediately exhausting the available memory.
+
+Required Action: The backend code must be refactored to load the ML model only once when the application server starts. The loaded model should then be stored in a global variable or a singleton instance and reused for all subsequent API requests.
+
+2. Detailed Analysis
+The Flutter client application functions correctly. For each message a user sends, it makes a new, stateless POST request to the backend. This is standard client behavior.
+
+The issue lies in how the backend handles these requests. The memory crash indicates that the service is not reusing resources efficiently. Loading a large object, such as a tokenizer and a language model, is a time-consuming and memory-intensive operation. Performing this operation inside the request-response cycle is unsustainable.
+
+Current (Problematic) Flow:
+
+Flutter app sends POST /chat.
+
+Render server receives the request.
+
+Backend code loads the entire ML model from disk into RAM.
+
+The model processes the user's query.
+
+A response is sent.
+
+The memory used by the model is eventually garbage collected, but if another request arrives before this happens, memory usage spikes.
+
+Required (Optimized) Flow:
+
+Render server starts the application process.
+
+Backend code loads the ML model into a global variable ONE TIME.
+
+The server is now "ready" and listening for requests.
+
+Flutter app sends POST /chat.
+
+Render server receives the request.
+
+Backend code uses the pre-loaded model from memory to process the query.
+
+A response is sent. This process is extremely fast and uses minimal additional memory per request.
+
+3. API Contract (For Confirmation)
+The backend must continue to adhere to the following API contract. The Flutter client is already coded to this specification.
+
+Endpoint: POST {your_backend_url}
+
+Content-Type: application/json
+
+Request Body Schema:
+
+{
+  "session_id": "string",
+  "query": "string"
+}
+
+Successful Response (200 OK) Body Schema:
+
+{
+  "response": "string"
+}
+
+(Note: The Flutter client currently expects the raw string response, but wrapping it in a JSON object as specified here is better practice for future expansion.)
+
+4. Actionable Recommendations & Code Examples
+The following examples use Python with the Flask framework, but the principle applies to any language or framework (FastAPI, Node.js, etc.).
+
+Current (Problematic) Pattern - DO NOT USE
+#
+# This is an example of the WRONG way to do it.
+#
+from flask import Flask, request, jsonify
+from my_model_library import load_big_model # Assume this loads your model
+
+app = Flask(__name__)
+
+@app.route('/chat', methods=['POST'])
+def handle_chat():
+    # PROBLEM: The model is loaded on every single request.
+    # This will crash the server.
+    model = load_big_model()
+    
+    user_query = request.get_json()['query']
+    bot_response = model.predict(user_query)
+    
+    return jsonify({'response': bot_response})
+
+Recommended (Optimized) Pattern - PLEASE IMPLEMENT
+#
+# This is the CORRECT, memory-efficient way to do it.
+#
+from flask import Flask, request, jsonify
+from my_model_library import load_big_model # Assume this loads your model
+
+app = Flask(__name__)
+
+# --- THE FIX ---
+# 1. Load the model ONCE when the application starts.
+print("Initializing server: loading ML model...")
+MODEL = load_big_model()
+print("Model loaded successfully. Server is ready.")
+
+
+@app.route('/chat', methods=['POST'])
+def handle_chat():
+    # 2. Reuse the pre-loaded model for every request.
+    # This is extremely fast and memory-friendly.
+    user_query = request.get_json()['query']
+    bot_response = MODEL.predict(user_query)
+    
+    return jsonify({'response': bot_response})
+
+5. Next Steps
+Please review this report.
+
+Locate the model loading logic in the current backend codebase.
+
+Refactor the code to match the Recommended (Optimized) Pattern described above.
+
+Deploy the updated service to Render.
+
+Monitor the memory usage graph on the Render dashboard to confirm that the issue is resolved. The memory should now be stable after the initial startup load.
