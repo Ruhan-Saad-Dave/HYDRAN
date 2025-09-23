@@ -43,8 +43,10 @@ def initialize_agent():
     This function is called once when the application starts.
     """
     global agent_executor, agent_initialized
-    
+
+    print(f"--- Checking agent_initialized flag: {agent_initialized} ---")
     if agent_initialized:
+        print("--- Agent already initialized, skipping. ---")
         return
 
     print("--- Initializing Agent ---")
@@ -187,7 +189,8 @@ def get_symptom_checker_response(session_id: str, query: str):
     """
     Main function to run the RAG agent. Uses the pre-initialized agent_executor.
     """
-
+    print("--- Entered get_symptom_checker_response ---")
+    initialize_agent()  # Ensure the agent is initialized
 
     if not agent_executor:
         print("--- ERROR: Agent Executor is not initialized. ---")
