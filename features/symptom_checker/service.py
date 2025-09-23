@@ -35,14 +35,18 @@ supabase: Client = create_client(supabase_url, supabase_key)
 
 # --- Global Agent Executor ---
 agent_executor = None
+agent_initialized = False
 
 def initialize_agent():
     """
     Initializes the language model, knowledge base, and agent executor.
     This function is called once when the application starts.
     """
-    global agent_executor
+    global agent_executor, agent_initialized
     
+    if agent_initialized:
+        return
+
     print("--- Initializing Agent ---")
 
     # 1. Initialize LLM
@@ -144,10 +148,8 @@ def initialize_agent():
     # 5. Create and Assign Agent Executor
     agent = create_tool_calling_agent(llm, tools, prompt)
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+    agent_initialized = True
     print("--- Agent Initialized Successfully ---")
-
-# --- Application Startup: Initialize the agent ---
-initialize_agent()
 
 # --- Chat History Management ---
 def get_chat_history(session_id: str):
@@ -185,6 +187,8 @@ def get_symptom_checker_response(session_id: str, query: str):
     """
     Main function to run the RAG agent. Uses the pre-initialized agent_executor.
     """
+
+
     if not agent_executor:
         print("--- ERROR: Agent Executor is not initialized. ---")
         return "Error: The AI agent is not available. Please contact support."
